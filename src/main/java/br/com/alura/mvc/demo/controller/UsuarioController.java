@@ -16,31 +16,31 @@ import br.com.alura.mvc.demo.model.StatusPedido;
 import br.com.alura.mvc.demo.repository.PedidoRepository;
 
 @Controller
-@RequestMapping("/home")
-public class HomeController {
-	
+@RequestMapping("usuario")
+public class UsuarioController {
+
 	@Autowired
 	private PedidoRepository pedidoRepository;
 	
-	@GetMapping
+	@GetMapping("pedido")
 	public String home(String status, Model model, Principal principal) {
 		Pedido pedido = new Pedido();
-		List <Pedido> pedidos = pedidoRepository.findByStatus(StatusPedido.ENTREGUE);
+		List <Pedido> pedidos = pedidoRepository.findAllByUsuario(principal.getName());
 		model.addAttribute("pedidos", pedidos);
-		return "home";	
+		return "usuario/home";	
 	}	
 	
-	@GetMapping("/{status}")
-	public String porStatus(@PathVariable("status")String status, Model model) {
+	@GetMapping("pedido/{status}")
+	public String porStatus(@PathVariable("status")String status, Model model, Principal principal) {
 		Pedido pedido = new Pedido();
-		List <Pedido> pedidos = pedidoRepository.findByStatus(StatusPedido.valueOf(status.toUpperCase()));
+		List <Pedido> pedidos = pedidoRepository.findByStatusEUsuario(StatusPedido.valueOf(status.toUpperCase()), principal.getName());
 		model.addAttribute("pedidos", pedidos);
 		model.addAttribute("status", status);
-		return "home";	
+		return "usuario/home";	
 	}	
 	
 	@ExceptionHandler(IllegalArgumentException.class)
 	public String onError() {
-		return "redirect:/home";
+		return "redirect:/usuario/home";
 	}
 }
